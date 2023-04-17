@@ -18,7 +18,7 @@ if CURRENT_VERSION < REQUIRED_VERSION:
 
 setup(
     name="curtely",
-    version="0.0.1",
+    version="0.0.2",
     description="a 🧑‍💻Telegram API🧑‍💻 wrapper",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",

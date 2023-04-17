@@ -1,17 +1,18 @@
-## Curtely v0.0.1 Telegram API wrapper
+## Curtely v0.0.2 Telegram API wrapper
 ## Change log
-- First release
+- Added `message_handler` decoretor and renamed `handle_updates` to `run`
 ## Usage
 ```python
 # Here is an example of an easy echo bot
 import curtely
 
-TOKEN = "your-telegram-bot-token"
-
-def handler(bot: curtely.TelegramAPI, message: curtely.Message):
-    bot.send_message(message.reply(message.content()))
+TOKEN = "your-token-here"
 
 bot = curtely.TelegramAPI(TOKEN)
 
-bot.handle_updates(handler)
+@curtely.message_handler(bot)
+def message_handler(api: curtely.TelegramAPI, message: curtely.Message):
+    api.send_message(message.reply(message.content()))
+
+bot.run()
 ```

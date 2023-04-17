@@ -37,6 +37,7 @@ class TelegramAPI:
     def __init__(self, token: str):
         self.token = token
         self._update_id = None
+        self._message_handler = None
 
     def send_message(self, message: Message):
         url = f"https://api.telegram.org/bot{self.token}/sendMessage"
@@ -70,6 +71,9 @@ class TelegramAPI:
         response = requests.post(url, json=payload)
         response.raise_for_status()
 
+    def set_message_handler(self, handler):
+        self._message_handler = handler
+
     def _get_updates(self) -> List[Message]:
         url = f"https://api.telegram.org/bot{self.token}/getUpdates"
         if self._update_id is not None:
@@ -94,16 +98,17 @@ class TelegramAPI:
 
             messages.append(Message(text, chat_id, author_username, author_name, author_id))
 
-        return messages       
-    
-    def handle_updates(self, handler: Callable[[Type["TelegramAPI"], Message], None], read_cooldown: int = 1):
+        return messages
+
+    def run(self, read_cooldown: int = 1):
         while True:
             try:
                 result = self._get_updates()
 
                 threads = []
                 for message in result:
-                    thread = threading.Thread(target=handler, args=(self, message))
+                    if self._message_handler is not None:
+                        thread = threading.Thread(target=self._message_handler, args=(self, message))
                     thread.start()
                 
                     threads.append(thread)
@@ -112,3 +117,8 @@ class TelegramAPI:
                 print(f"error: {e}")
             finally:
                 time.sleep(read_cooldown)
+
+def message_handler(api: TelegramAPI):
+    def wrapper(func: Callable[[TelegramAPI, Message], None]):
+        api.set_message_handler(func)
+    return wrapper               
