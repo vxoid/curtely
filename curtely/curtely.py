@@ -2,7 +2,7 @@ import threading
 import requests
 import time
 
-from typing import List, Type, Callable
+from typing import List, Callable
 
 class Message:
     def __init__(self, content: str, chat_id: str, author_username: str = None, author_name: str = None, author_id: str = None):
@@ -14,6 +14,9 @@ class Message:
 
     def reply(self, content: str):
         return Message(content, self._chat_id)
+    
+    def chat_id(self) -> str:
+        return self._chat_id
     
     def content(self) -> str:
         return self._content
@@ -33,7 +36,7 @@ class Command:
         self._description = description
         self._callback = callback
 
-class TelegramAPI:
+class Bot:
     def __init__(self, token: str):
         self.token = token
         self._update_id = None
@@ -118,7 +121,7 @@ class TelegramAPI:
             finally:
                 time.sleep(read_cooldown)
 
-def message_handler(api: TelegramAPI):
-    def wrapper(func: Callable[[TelegramAPI, Message], None]):
+def message_handler(api: Bot):
+    def wrapper(func: Callable[[Bot, Message], None]):
         api.set_message_handler(func)
     return wrapper               

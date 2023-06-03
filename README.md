@@ -1,6 +1,7 @@
-## Curtely v0.0.2 Telegram API wrapper
+## Curtely v0.0.3 Telegram API wrapper
 ## Change log
-- Added `message_handler` decoretor and renamed `handle_updates` to `run`
+- Added `chat_id()` to `Message`
+- Renamed `TelegramAPI` on `Bot`
 ## Usage
 ```python
 # Here is an example of an easy echo bot
@@ -8,10 +9,10 @@ import curtely
 
 TOKEN = "your-token-here"
 
-bot = curtely.TelegramAPI(TOKEN)
+bot = curtely.Bot(TOKEN)
 
 @curtely.message_handler(bot)
-def message_handler(api: curtely.TelegramAPI, message: curtely.Message):
+def message_handler(api: curtely.Bot, message: curtely.Message):
     api.send_message(message.reply(message.content()))
 
 bot.run()
